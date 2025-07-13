@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cupcake-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cupcake-service
+  template:
+    metadata:
+      labels:
+        app: cupcake-service
+    spec:
+      containers:
+        - name: cupcake-service
+          image: cupcake-service:latest
+          ports:
+            - containerPort: 8081

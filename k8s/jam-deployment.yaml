@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jam-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jam-service
+  template:
+    metadata:
+      labels:
+        app: jam-service
+    spec:
+      containers:
+        - name: jam-service
+          image: jam-service:latest
+          ports:
+            - containerPort: 8082

@@ -1,0 +1,30 @@
+
+pipeline {
+    agent any
+    environment {
+        PATH = "${tool 'Maven'}/bin;${env.PATH}"  // If using Jenkins tool configuration
+    }
+    stages {
+        stage('Clone') {
+            steps {
+                git url: 'https://github.com/kornvipa1003/sweet-service.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                bat 'mvn clean package'
+            }
+        }
+        stage('Dockerize') {
+            steps {
+                bat 'docker build -t jam-service:latest .'
+            }
+        }
+        stage('Deploy to Minikube') {
+            steps {
+                bat 'kubectl apply -f k8s\\jam-deployment.yaml'
+                bat 'kubectl apply -f k8s\\jam-service.yaml'
+            }
+        }
+    }
+}
