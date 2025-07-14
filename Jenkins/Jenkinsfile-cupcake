@@ -2,28 +2,34 @@
 pipeline {
     agent any
     environment {
-        PATH = "${tool 'Maven'}/bin;${env.PATH}"  // If using Jenkins tool configuration
+        GIT_REPO = 'https://github.com/kornvipa1003/sweet-service.git'
+        BRANCH = 'main'
     }
     stages {
         stage('Clone') {
             steps {
-                git url: 'https://github.com/kornvipa1003/sweet-service.git'
+                git branch: "${BRANCH}", url: "${GIT_REPO}"
+            }
+        }
+        stage('Clean Target') {
+            steps {
+                bat 'rd /s /q cupcake-service\\target || echo Target already deleted'
             }
         }
         stage('Build') {
             steps {
-                bat 'mvn clean package'
-            }
+                bat 'cd cupcake-service && mvn clean package -X'
+           }
         }
         stage('Dockerize') {
             steps {
-                bat 'docker build -t cupcake-service:latest .'
+                bat 'cd cupcake-service && docker build -t cupcake-service:latest .'
             }
         }
         stage('Deploy to Minikube') {
             steps {
-                bat 'kubectl apply -f k8s\\cupcake-deployment.yaml'
-                bat 'kubectl apply -f k8s\\cupcake-service.yaml'
+                bat 'set KUBECONFIG=C:\\kube-config\\config && kubectl apply -f k8s\\cupcake-deployment.yaml'
+                bat 'set KUBECONFIG=C:\\kube-config\\config && kubectl apply -f k8s\\cupcake-service.yaml'
             }
         }
     }
